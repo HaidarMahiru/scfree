@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haidar Asikk Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- STYLE DASAR (HITAM NEON) --- */
+        :root {
+            --primary: #00e5ff; /* Cyan */
+            --secondary: #9d00ff; /* Ungu */
+            --bg-color: #050505; /* Hitam Solid */
+            --card-bg: #111;
+            --text: #fff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color); /* Warna dasar paling belakang */
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden; /* Mencegah scroll samping */
+        }
+
+        /* --- PARTICLES BACKGROUND --- */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Layer 1: Di atas background warna, di bawah konten */
+        }
+
+        /* --- CONTAINER UTAMA --- */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 80px;
+            position: relative;
+            z-index: 10; /* Layer 10: Konten utama di atas partikel */
+        }
+
+        /* --- HEADER --- */
+        .header { text-align: center; margin: 20px 0 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .img-box {
+            width: 100px; height: 100px; margin: 0 auto 10px; border-radius: 50%;
+            border: 2px solid var(--primary); padding: 3px;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            background: #000; /* Agar transparan tidak tembus ke gambar */
+        }
+        .img-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .header h1 { font-family: 'Rajdhani', sans-serif; font-size: 2rem; color: var(--primary); letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,229,255,0.5); }
+        .badge { background: #111; color: #aaa; padding: 4px 12px; border-radius: 10px; font-size: 0.8rem; border: 1px solid #333; }
+
+        /* --- CARD STYLE --- */
+        .card {
+            background: rgba(17, 17, 17, 0.8); /* Sedikit transparan agar partikel terlihat samar */
+            backdrop-filter: blur(5px); /* Efek kaca buram */
+            border: 1px solid #222; border-radius: 12px;
+            padding: 15px; margin-bottom: 20px; display: flex; flex-direction: column;
+        }
+        .card-img {
+            width: 100%; height: 180px; background: #000; border-radius: 8px;
+            margin-bottom: 15px; overflow: hidden; position: relative;
+        }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .card-title {
+            font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; margin-bottom: 15px;
+            border-left: 3px solid var(--primary); padding-left: 10px; font-weight: bold;
+        }
+
+        /* TOMBOL LIST (ATAS BAWAH) */
+        .btn-list { display: flex; flex-direction: column; gap: 10px; }
+        .btn {
+            width: 100%; padding: 12px; text-align: center; text-decoration: none;
+            border-radius: 6px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem;
+            display: block; transition: 0.2s; cursor: pointer;
+        }
+        .btn-rev { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-down { background: var(--primary); color: #000; border: none; }
+        .btn:active { transform: scale(0.95); }
+
+        /* --- POPUP FOLLOW (MANDATORY) --- */
+        .overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999; /* Layer paling atas */
+            align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .popup-box {
+            background: #111; width: 90%; max-width: 350px; padding: 25px;
+            border-radius: 15px; text-align: center; border: 2px solid var(--secondary);
+            box-shadow: 0 0 30px rgba(157, 0, 255, 0.2);
+        }
+        
+        /* Item Link Popup */
+        .link-item {
+            background: #222; color: white; text-decoration: none; padding: 12px;
+            margin-bottom: 8px; display: flex; justify-content: space-between;
+            border-radius: 6px; font-size: 0.9rem; border: 1px solid #333;
+            transition: 0.3s; cursor: pointer;
+        }
+        .link-item:hover { border-color: var(--primary); color: var(--primary); }
+        
+        /* KELAS BARU: Jika link sudah diklik */
+        .link-item.visited {
+            background: #1a3320; /* Hijau gelap */
+            border-color: #00ff44;
+            color: #00ff44;
+            opacity: 0.8;
+        }
+        .link-item.visited::after { content: "✓"; font-weight: bold; }
+
+        /* --- ADMIN PANEL --- */
+        #adminPanel {
+            display: none; background: rgba(10, 10, 10, 0.95); border: 1px solid #333;
+            padding: 20px; border-radius: 10px; margin-top: 20px;
+            position: relative; z-index: 20; /* Di atas konten biasa */
+        }
+        .admin-section { margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 15px; }
+        input {
+            width: 100%; padding: 10px; background: #151515; border: 1px solid #333;
+            color: white; margin-bottom: 8px; border-radius: 4px;
+        }
+        .btn-save { width: 100%; padding: 10px; background: var(--secondary); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        /* TOMBOL KECIL */
+        .fab {
+            position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px;
+            background: #111; border: 1px solid #333; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; color: #555;
+            z-index: 100;
+        }
+        .del-btn {
+            position: absolute; top: 5px; right: 5px; width: 25px; height: 25px;
+            background: red; color: white; border-radius: 50%; font-weight: bold;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+        }
+        .list-url-item {
+            display: flex; justify-content: space-between; font-size: 0.8rem;
+            background: #000; padding: 5px; margin-bottom: 5px; border-left: 2px solid var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <div id="popupOverlay" class="overlay">
+        <div class="popup-box">
+            <h2 style="color:white; margin-bottom:5px;">⚠️ AKSES TERKUNCI</h2>
+            <p style="color:#aaa; font-size:0.8rem; margin-bottom:20px;">
+                Wajib Klik & Follow <b>SEMUA</b> link di bawah ini agar tombol buka muncul!
+            </p>
+            
+            <div id="popupLinks"></div>
+
+            <button id="btnUnlock" onclick="unlockWeb()" class="btn-save" style="margin-top:15px; display:none; background: var(--primary); color:black;">
+                ✅ BUKA WEB SEKARANG
+            </button>
+        </div>
+    </div>
+
+    <div id="loginOverlay" class="overlay">
+        <div class="popup-box" style="border-color: var(--primary);">
+            <h3 style="color:var(--primary); margin-bottom:15px;">ADMIN ZONE</h3>
+            <input type="password" id="passInput" placeholder="Password Admin...">
+            <button onclick="login()" class="btn-save" style="background:var(--primary); color:black;">MASUK</button>
+            <button onclick="closeLogin()" style="margin-top:10px; background:none; border:none; color:#777;">Batal</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainView">
+        <div class="header">
+            <div class="img-box">
+                <img src="https://files.catbox.moe/g9sq0o.png" alt="Profile">
+            </div>
+            <h1>HAIDAR ASIKK</h1>
+            <span class="badge">ALL SCRIPT BOT FREE HAIDAR</span>
+        </div>
+
+        <div id="postList"></div>
+    </div>
+
+    <div class="container" id="adminPanel">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h2 style="color:white;">DASHBOARD</h2>
+            <button onclick="logout()" style="background:red; border:none; color:white; padding:5px 10px; border-radius:4px;">Keluar</button>
+        </div>
+
+        <div class="admin-section">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">🔗 Link Popup Follow</h4>
+            <div id="adminUrlList"></div> <input type="text" id="newUrl" placeholder="https://instagram.com/...">
+            <button onclick="addUrl()" class="btn-save" style="width:auto; margin-top:5px;">+ Tambah URL</button>
+        </div>
+
+        <div class="admin-section" style="border:none;">
+            <h4 style="color:var(--primary); margin-bottom:10px;">➕ Post Script Baru</h4>
+            <input type="text" id="pTitle" placeholder="Judul Script">
+            <input type="text" id="pImg" placeholder="Link Gambar">
+            <input type="text" id="pRev" placeholder="Link Review">
+            <input type="text" id="pDown" placeholder="Link Download">
+            <button onclick="addPost()" class="btn-save" style="background:var(--primary); color:black;">POSTING</button>
+        </div>
+    </div>
+
+    <div class="fab" onclick="openLogin()">×͜×</div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
